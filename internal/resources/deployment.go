@@ -116,7 +116,7 @@ func BuildDeployment(instance *litellmv1alpha1.LiteLLMInstance, labels map[strin
 		}
 	}
 
-	var imagePullSecrets []corev1.LocalObjectReference
+	imagePullSecrets := make([]corev1.LocalObjectReference, 0, len(instance.Spec.Image.PullSecrets))
 	for _, s := range instance.Spec.Image.PullSecrets {
 		imagePullSecrets = append(imagePullSecrets, corev1.LocalObjectReference{Name: s.Name})
 	}

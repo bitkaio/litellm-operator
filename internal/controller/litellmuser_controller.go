@@ -158,7 +158,7 @@ func (r *LiteLLMUserReconciler) resolveTeamRefs(
 	ctx context.Context,
 	user *litellmv1alpha1.LiteLLMUser,
 ) ([]litellm.UserTeam, error) {
-	var teams []litellm.UserTeam
+	teams := make([]litellm.UserTeam, 0, len(user.Spec.Teams))
 	for _, t := range user.Spec.Teams {
 		teamID := t.TeamID
 		if t.TeamRef != nil {

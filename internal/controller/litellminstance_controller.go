@@ -96,7 +96,6 @@ func (r *LiteLLMInstanceReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 	// 3. Database migration job (if enabled)
 	if instance.Spec.Database.Migration == nil || instance.Spec.Database.Migration.Enabled {
 		if err := r.reconcileMigrationJob(ctx, &instance, labels); err != nil {
-			reconcileErr = err
 			log.Error(err, "failed to reconcile migration Job")
 			meta.SetStatusCondition(&instance.Status.Conditions, metav1.Condition{
 				Type:               ConditionDatabaseReady,
