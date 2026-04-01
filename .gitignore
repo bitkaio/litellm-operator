@@ -19,6 +19,14 @@ go.work
 # Kubernetes Generated files - skip generated files, except for vendored files
 !vendor/**/zz_generated.*
 
+# Documentation site
+docs/node_modules
+docs/.vitepress/cache
+docs/.vitepress/dist
+
+# Temp files
+tmp/
+
 # editor and IDE paraphernalia
 .idea
 .vscode

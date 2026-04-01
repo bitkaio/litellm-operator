@@ -1,0 +1,38 @@
+name: Sync docs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - CHANGELOG.md
+      - CONTRIBUTING.md
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    name: Sync root docs to VitePress
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Copy files
+        run: |
+          cp CHANGELOG.md docs/changelog.md
+          cp CONTRIBUTING.md docs/contributing.md
+
+      - name: Check for changes
+        id: diff
+        run: |
+          git diff --quiet docs/changelog.md docs/contributing.md && echo "changed=false" >> "$GITHUB_OUTPUT" || echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Commit and push
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/changelog.md docs/contributing.md
+          git commit -m "docs: sync CHANGELOG.md and CONTRIBUTING.md to docs/"
+          git push
