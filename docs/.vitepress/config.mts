@@ -3,6 +3,10 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: 'LiteLLM Operator',
   description: 'Kubernetes operator for deploying and managing production-ready LiteLLM AI Gateway instances',
+  ignoreDeadLinks: [
+    /\/LICENSE$/,
+  ],
+
   head: [
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/logo.svg' }],
   ],
