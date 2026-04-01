@@ -1,0 +1,43 @@
+apiVersion: litellm.bitkaio.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  labels:
+    app.kubernetes.io/name: litellm-operator
+    app.kubernetes.io/managed-by: kustomize
+  name: gpt4o
+spec:
+  instanceRef:
+    name: litellminstance-sample
+  modelName: gpt-4o
+  litellmParams:
+    model: openai/gpt-4o
+    apiKeySecretRef:
+      name: openai-credentials
+      key: OPENAI_API_KEY
+    rpm: 500
+    tpm: 100000
+    timeout: 60
+  modelInfo:
+    maxTokens: 128000
+---
+apiVersion: litellm.bitkaio.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  labels:
+    app.kubernetes.io/name: litellm-operator
+    app.kubernetes.io/managed-by: kustomize
+  name: claude-sonnet
+spec:
+  instanceRef:
+    name: litellminstance-sample
+  modelName: claude-4-sonnet
+  litellmParams:
+    model: anthropic/claude-sonnet-4-20250514
+    apiKeySecretRef:
+      name: anthropic-credentials
+      key: ANTHROPIC_API_KEY
+    rpm: 300
+    tpm: 80000
+    timeout: 120
+  modelInfo:
+    maxTokens: 200000

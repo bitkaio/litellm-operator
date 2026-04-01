@@ -1,0 +1,8 @@
+## Append samples of your project ##
+resources:
+- litellm_v1alpha1_litellminstance.yaml
+- litellm_v1alpha1_litellmmodel.yaml
+- litellm_v1alpha1_litellmteam.yaml
+- litellm_v1alpha1_litellmuser.yaml
+- litellm_v1alpha1_litellmvirtualkey.yaml
+# +kubebuilder:scaffold:manifestskustomizesamples

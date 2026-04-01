@@ -1,0 +1,21 @@
+apiVersion: litellm.bitkaio.com/v1alpha1
+kind: LiteLLMUser
+metadata:
+  labels:
+    app.kubernetes.io/name: litellm-operator
+    app.kubernetes.io/managed-by: kustomize
+  name: service-bot
+spec:
+  instanceRef:
+    name: litellminstance-sample
+  userId: service-bot@example.com
+  userEmail: service-bot@example.com
+  userRole: internal_user
+  maxBudget: 500
+  budgetDuration: "30d"
+  models:
+    - gpt-4o
+  teams:
+    - teamRef:
+        name: engineering
+      role: user

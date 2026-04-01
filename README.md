@@ -1,0 +1,210 @@
+# LiteLLM Operator
+
+A Kubernetes operator for deploying and managing production-ready [LiteLLM](https://github.com/BerriAI/litellm) AI Gateway instances. Built with [Operator SDK](https://sdk.operatorframework.io/) for OLM integration, OperatorHub distribution, and first-class OpenShift support.
+
+Replaces manual Helm-based deployments with a declarative, reconciliation-based approach that keeps CRD state and the LiteLLM API in sync.
+
+## Features
+
+- **Declarative LiteLLM deployment** — manage proxy instances, models, teams, users, and API keys as Kubernetes custom resources
+- **Bidirectional config sync** — reconciles CRD state with the LiteLLM REST API on every sync interval
+- **Team member management** — three modes: `crd` (CRD authoritative), `sso` (IdP authoritative), `mixed` (additive)
+- **VirtualKey secret management** — generated API keys are stored in Kubernetes Secrets with owner references for automatic cleanup
+- **SSO/SCIM support** — configure Azure Entra ID, Okta, Google, or generic OIDC providers declaratively
+- **Production-ready** — HPA, PDB, NetworkPolicy, health checks, resource limits, security contexts
+- **Multiple install methods** — OLM bundles (OperatorHub/OpenShift) or Helm chart
+
+## Custom Resource Definitions
+
+| CRD | Short Name | Description |
+| --- | ---------- | ----------- |
+| `LiteLLMInstance` | `li` | Deploys a LiteLLM proxy with database, Redis, networking, and SSO |
+| `LiteLLMModel` | `lm` | Registers a model (e.g., `openai/gpt-4o`) with the proxy |
+| `LiteLLMTeam` | `lt` | Creates a team with budget limits and member management |
+| `LiteLLMUser` | `lu` | Creates a user (service accounts, bot users, non-SSO environments) |
+| `LiteLLMVirtualKey` | `lk` | Generates an API key scoped to a team/user with budget and rate limits |
+
+All secondary resources (`LiteLLMModel`, `LiteLLMTeam`, `LiteLLMUser`, `LiteLLMVirtualKey`) reference a `LiteLLMInstance` via `spec.instanceRef`.
+
+## Prerequisites
+
+- Go 1.22+
+- Docker 17.03+
+- kubectl v1.28+
+- Access to a Kubernetes v1.28+ cluster
+- A PostgreSQL database for LiteLLM state storage
+
+## Quick Start
+
+### 1. Install CRDs
+
+```sh
+make install
+```
+
+### 2. Deploy the operator
+
+```sh
+make deploy IMG=ghcr.io/bitkaio/litellm-operator:latest
+```
+
+### 3. Create a database secret
+
+```sh
+kubectl create secret generic litellm-db-credentials \
+  --from-literal=DATABASE_URL='postgresql://user:pass@host:5432/litellm'
+```
+
+### 4. Deploy a LiteLLM instance
+
+```yaml
+apiVersion: litellm.bitkaio.com/v1alpha1
+kind: LiteLLMInstance
+metadata:
+  name: my-gateway
+spec:
+  replicas: 2
+  masterKey:
+    autoGenerate: true
+  database:
+    external:
+      connectionSecretRef:
+        name: litellm-db-credentials
+        key: DATABASE_URL
+  service:
+    type: ClusterIP
+    port: 4000
+```
+
+### 5. Register a model
+
+```yaml
+apiVersion: litellm.bitkaio.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: gpt4o
+spec:
+  instanceRef:
+    name: my-gateway
+  modelName: gpt-4o
+  litellmParams:
+    model: openai/gpt-4o
+    apiKeySecretRef:
+      name: openai-credentials
+      key: OPENAI_API_KEY
+```
+
+### 6. Create a team and API key
+
+```yaml
+apiVersion: litellm.bitkaio.com/v1alpha1
+kind: LiteLLMTeam
+metadata:
+  name: engineering
+spec:
+  instanceRef:
+    name: my-gateway
+  teamAlias: engineering
+  models: [gpt-4o]
+  maxBudgetMonthly: 1000
+  budgetDuration: "30d"
+  members:
+    - email: dev@example.com
+      role: user
+---
+apiVersion: litellm.bitkaio.com/v1alpha1
+kind: LiteLLMVirtualKey
+metadata:
+  name: eng-ci-key
+spec:
+  instanceRef:
+    name: my-gateway
+  keyAlias: eng-ci-key
+  teamRef:
+    name: engineering
+  models: [gpt-4o]
+  maxBudget: "100"
+```
+
+The generated API key is stored in a Secret (default name: `{name}-key`):
+
+```sh
+kubectl get secret eng-ci-key-key -o jsonpath='{.data.api-key}' | base64 -d
+```
+
+## Installation Methods
+
+### Direct (Makefile)
+
+```sh
+make install       # Install CRDs
+make deploy        # Deploy operator
+```
+
+### OLM (OpenShift / clusters with OLM)
+
+```sh
+operator-sdk run bundle ghcr.io/bitkaio/litellm-operator-bundle:v0.5.0
+```
+
+### Helm
+
+```sh
+helm install litellm-operator deploy/charts/litellm-operator/
+```
+
+## Development
+
+### Build
+
+```sh
+make build                    # Build operator binary
+make docker-build IMG=...     # Build container image
+```
+
+### Test
+
+```sh
+make test          # Unit + integration tests (envtest)
+make test-e2e      # End-to-end tests (requires cluster)
+```
+
+### Generate
+
+```sh
+make generate      # DeepCopy functions
+make manifests     # CRD YAMLs, RBAC, webhooks
+```
+
+### Run locally (against current kubeconfig cluster)
+
+```sh
+make install       # Install CRDs first
+make run           # Run operator outside the cluster
+```
+
+## Architecture
+
+Key design points:
+
+- **LiteLLMInstance** controller manages Deployment, ConfigMap, Service, Secrets, Ingress, HPA, PDB, NetworkPolicy, and migration Jobs
+- **Secondary controllers** (Model, Team, User, VirtualKey) resolve their `instanceRef` to discover the LiteLLM API endpoint and master key, then sync state via the REST API
+- **Finalizers** ensure cleanup: deleting a CRD calls the corresponding LiteLLM API delete endpoint before removing the Kubernetes resource
+- **Spec hash annotations** (`litellm.bitkaio.com/sync-hash`) enable change detection to avoid unnecessary API calls
+
+## Project Structure
+
+```text
+api/v1alpha1/          CRD type definitions
+internal/controller/   Reconciliation controllers
+internal/litellm/      LiteLLM REST API client
+internal/resources/    Kubernetes resource generators
+config/crd/bases/      Generated CRD manifests
+config/samples/        Example custom resources
+bundle/                OLM bundle manifests
+deploy/charts/         Helm chart
+```
+
+## License
+
+Copyright 2026. Licensed under the Apache License, Version 2.0.

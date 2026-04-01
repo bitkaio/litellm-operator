@@ -1,0 +1,26 @@
+apiVersion: litellm.bitkaio.com/v1alpha1
+kind: LiteLLMTeam
+metadata:
+  labels:
+    app.kubernetes.io/name: litellm-operator
+    app.kubernetes.io/managed-by: kustomize
+  name: engineering
+spec:
+  instanceRef:
+    name: litellminstance-sample
+  teamAlias: engineering
+  models:
+    - gpt-4o
+    - claude-4-sonnet
+  maxBudgetMonthly: 1000
+  budgetDuration: "30d"
+  rpmLimit: 200
+  tpmLimit: 50000
+  memberManagement: mixed
+  members:
+    - email: lead@example.com
+      role: admin
+    - email: dev1@example.com
+      role: user
+    - email: dev2@example.com
+      role: user

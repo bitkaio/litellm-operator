@@ -1,0 +1,53 @@
+apiVersion: litellm.bitkaio.com/v1alpha1
+kind: LiteLLMInstance
+metadata:
+  labels:
+    app.kubernetes.io/name: litellm-operator
+    app.kubernetes.io/managed-by: kustomize
+  name: litellminstance-sample
+spec:
+  # LiteLLM proxy image
+  image:
+    repository: ghcr.io/berriai/litellm
+    tag: main-v1.60.0
+    pullPolicy: IfNotPresent
+
+  replicas: 2
+
+  # Master key for admin API access
+  masterKey:
+    autoGenerate: true
+
+  # Database configuration (external PostgreSQL)
+  database:
+    external:
+      connectionSecretRef:
+        name: litellm-db-credentials
+        key: DATABASE_URL
+
+  # Redis for caching
+  redis:
+    external:
+      connectionSecretRef:
+        name: litellm-redis-credentials
+        key: REDIS_URL
+
+  # Networking
+  service:
+    type: ClusterIP
+    port: 4000
+
+  # Resource limits
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: "1"
+      memory: 512Mi
+
+  # General settings
+  generalSettings:
+    masterKeyRequired: true
+    alerting:
+      - slack
