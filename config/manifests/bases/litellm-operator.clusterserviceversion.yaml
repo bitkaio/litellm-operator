@@ -1,0 +1,95 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: ClusterServiceVersion
+metadata:
+  annotations:
+    alm-examples: '[]'
+    capabilities: Seamless Upgrades
+    categories: AI/Machine Learning
+    containerImage: ghcr.io/palenaai/litellm-operator:latest
+    description: Kubernetes operator for deploying and managing production-ready LiteLLM AI Gateway instances.
+    repository: https://github.com/PalenaAI/litellm-operator
+    support: bitkaio LLC
+  name: litellm-operator.v0.0.0
+  namespace: placeholder
+spec:
+  apiservicedefinitions: {}
+  customresourcedefinitions:
+    owned:
+      - description: Deploys a LiteLLM proxy instance with database, Redis, networking, and SSO configuration.
+        displayName: LiteLLM Instance
+        kind: LiteLLMInstance
+        name: litellminstances.litellm.palena.ai
+        version: v1alpha1
+      - description: Registers an AI model with a LiteLLM proxy instance.
+        displayName: LiteLLM Model
+        kind: LiteLLMModel
+        name: litellmmodels.litellm.palena.ai
+        version: v1alpha1
+      - description: Creates and manages a team in LiteLLM with budget limits and member management.
+        displayName: LiteLLM Team
+        kind: LiteLLMTeam
+        name: litellmteams.litellm.palena.ai
+        version: v1alpha1
+      - description: Creates a user in LiteLLM for non-SSO environments.
+        displayName: LiteLLM User
+        kind: LiteLLMUser
+        name: litellmusers.litellm.palena.ai
+        version: v1alpha1
+      - description: Generates a scoped API key and stores it in a Kubernetes Secret.
+        displayName: LiteLLM Virtual Key
+        kind: LiteLLMVirtualKey
+        name: litellmvirtualkeys.litellm.palena.ai
+        version: v1alpha1
+  description: |
+    The LiteLLM Operator is a Kubernetes operator for deploying and managing
+    production-ready [LiteLLM](https://github.com/BerriAI/litellm) AI Gateway instances.
+
+    Built with [Operator SDK](https://sdk.operatorframework.io/) for OLM integration,
+    OperatorHub distribution, and first-class OpenShift support.
+
+    ## Features
+
+    - **Declarative LiteLLM deployment** — manage proxy instances, models, teams, users, and API keys as Kubernetes custom resources
+    - **Bidirectional config sync** — reconciles CRD state with the LiteLLM REST API on every sync interval
+    - **Team member management** — three modes: CRD authoritative, SSO authoritative, and mixed
+    - **VirtualKey secret management** — generated API keys stored in Kubernetes Secrets with owner references
+    - **SSO/SCIM support** — configure Azure Entra ID, Okta, Google, or generic OIDC providers declaratively
+    - **Production-ready** — HPA, PDB, NetworkPolicy, health checks, resource limits, security contexts
+  displayName: LiteLLM Operator
+  icon:
+    - base64data: ""
+      mediatype: image/svg+xml
+  install:
+    spec:
+      deployments: []
+    strategy: deployment
+  installModes:
+    - supported: true
+      type: OwnNamespace
+    - supported: true
+      type: SingleNamespace
+    - supported: false
+      type: MultiNamespace
+    - supported: true
+      type: AllNamespaces
+  keywords:
+    - litellm
+    - ai
+    - llm
+    - gateway
+    - proxy
+    - kubernetes
+    - operator
+  links:
+    - name: Documentation
+      url: https://github.com/PalenaAI/litellm-operator
+    - name: LiteLLM
+      url: https://github.com/BerriAI/litellm
+  maintainers:
+    - email: info@bitkai.io
+      name: bitkaio LLC
+  maturity: alpha
+  minKubeVersion: 1.28.0
+  provider:
+    name: bitkaio LLC
+    url: https://palena.ai
