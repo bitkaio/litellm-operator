@@ -22,7 +22,7 @@ The operator exposes Prometheus metrics on `:8443/metrics`:
 If Prometheus Operator is installed, enable automatic scrape target creation:
 
 ```yaml
-apiVersion: litellm.bitkaio.com/v1alpha1
+apiVersion: litellm.palena.ai/v1alpha1
 kind: LiteLLMInstance
 metadata:
   name: my-gateway

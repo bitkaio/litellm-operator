@@ -46,7 +46,7 @@ Config Sync Loop
 Add the `configSync` section to your `LiteLLMInstance`:
 
 ```yaml
-apiVersion: litellm.bitkaio.com/v1alpha1
+apiVersion: litellm.palena.ai/v1alpha1
 kind: LiteLLMInstance
 metadata:
   name: my-gateway
@@ -94,7 +94,7 @@ When a resource exists in both the CRD and the API but they differ, the `conflic
 
 ## Change Detection
 
-The operator uses **content hashing** to detect changes efficiently. A SHA-256 hash of the spec is stored as an annotation (`litellm.bitkaio.com/sync-hash`) on each CR. During sync, the current hash is compared to the stored hash — if different, the resource is queued for update.
+The operator uses **content hashing** to detect changes efficiently. A SHA-256 hash of the spec is stored as an annotation (`litellm.palena.ai/sync-hash`) on each CR. During sync, the current hash is compared to the stored hash — if different, the resource is queued for update.
 
 ## Audit Changes
 

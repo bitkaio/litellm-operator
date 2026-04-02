@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **LiteLLMVirtualKey CRD** — generate scoped API keys stored in Kubernetes Secrets with owner references for automatic garbage collection
 - LiteLLM REST API client with interface-based design and mock implementation for testing
 - Finalizer-based cleanup on CRD deletion (calls LiteLLM API delete endpoints)
-- Spec hash annotations (`litellm.bitkaio.com/sync-hash`) for change detection to avoid unnecessary API calls
+- Spec hash annotations (`litellm.palena.ai/sync-hash`) for change detection to avoid unnecessary API calls
 - Auto-generation of master key and salt key Secrets
 - Database migration Job support (runs before Deployment rollout)
 - SSO configuration support (Azure Entra ID, Okta, Google, generic OIDC)

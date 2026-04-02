@@ -2,11 +2,11 @@
 # since it depends on service name and namespace that are out of this kustomize package.
 # It should be run by config/default
 resources:
-- bases/litellm.bitkaio.com_litellminstances.yaml
-- bases/litellm.bitkaio.com_litellmmodels.yaml
-- bases/litellm.bitkaio.com_litellmteams.yaml
-- bases/litellm.bitkaio.com_litellmusers.yaml
-- bases/litellm.bitkaio.com_litellmvirtualkeys.yaml
+- bases/litellm.palena.ai_litellminstances.yaml
+- bases/litellm.palena.ai_litellmmodels.yaml
+- bases/litellm.palena.ai_litellmteams.yaml
+- bases/litellm.palena.ai_litellmusers.yaml
+- bases/litellm.palena.ai_litellmvirtualkeys.yaml
 # +kubebuilder:scaffold:crdkustomizeresource
 
 patches:

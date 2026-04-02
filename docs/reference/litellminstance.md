@@ -2,14 +2,14 @@
 
 The primary CRD. Deploys a LiteLLM proxy with all infrastructure dependencies.
 
-**API Version:** `litellm.bitkaio.com/v1alpha1`
+**API Version:** `litellm.palena.ai/v1alpha1`
 **Kind:** `LiteLLMInstance`
 **Short Name:** `li`
 
 ## Minimal Example
 
 ```yaml
-apiVersion: litellm.bitkaio.com/v1alpha1
+apiVersion: litellm.palena.ai/v1alpha1
 kind: LiteLLMInstance
 metadata:
   name: my-gateway
@@ -26,7 +26,7 @@ spec:
 ## Full Example
 
 ```yaml
-apiVersion: litellm.bitkaio.com/v1alpha1
+apiVersion: litellm.palena.ai/v1alpha1
 kind: LiteLLMInstance
 metadata:
   name: my-gateway

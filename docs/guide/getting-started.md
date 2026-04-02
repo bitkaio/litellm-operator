@@ -35,7 +35,7 @@ kubectl create secret generic litellm-db-credentials \
 ## 3. Deploy a LiteLLM Instance
 
 ```yaml
-apiVersion: litellm.bitkaio.com/v1alpha1
+apiVersion: litellm.palena.ai/v1alpha1
 kind: LiteLLMInstance
 metadata:
   name: my-gateway
@@ -85,7 +85,7 @@ kubectl create secret generic openai-credentials \
 ## 5. Register a Model
 
 ```yaml
-apiVersion: litellm.bitkaio.com/v1alpha1
+apiVersion: litellm.palena.ai/v1alpha1
 kind: LiteLLMModel
 metadata:
   name: gpt4o
@@ -113,7 +113,7 @@ kubectl get litellmmodels  # or: kubectl get lm
 ## 6. Create a Team
 
 ```yaml
-apiVersion: litellm.bitkaio.com/v1alpha1
+apiVersion: litellm.palena.ai/v1alpha1
 kind: LiteLLMTeam
 metadata:
   name: engineering
@@ -141,7 +141,7 @@ kubectl get litellmteams  # or: kubectl get lt
 ## 7. Generate an API Key
 
 ```yaml
-apiVersion: litellm.bitkaio.com/v1alpha1
+apiVersion: litellm.palena.ai/v1alpha1
 kind: LiteLLMVirtualKey
 metadata:
   name: eng-ci-key

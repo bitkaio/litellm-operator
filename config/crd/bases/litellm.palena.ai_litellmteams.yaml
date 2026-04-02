@@ -4,25 +4,28 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.18.0
-  name: litellmvirtualkeys.litellm.bitkaio.com
+  name: litellmteams.litellm.palena.ai
 spec:
-  group: litellm.bitkaio.com
+  group: litellm.palena.ai
   names:
-    kind: LiteLLMVirtualKey
-    listKind: LiteLLMVirtualKeyList
-    plural: litellmvirtualkeys
+    kind: LiteLLMTeam
+    listKind: LiteLLMTeamList
+    plural: litellmteams
     shortNames:
-    - lk
-    singular: litellmvirtualkey
+    - lt
+    singular: litellmteam
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
-    - jsonPath: .spec.keyAlias
+    - jsonPath: .spec.teamAlias
       name: Alias
       type: string
-    - jsonPath: .status.isActive
-      name: Active
-      type: boolean
+    - jsonPath: .status.totalMemberCount
+      name: Members
+      type: integer
+    - jsonPath: .spec.memberManagement
+      name: MemberMgmt
+      type: string
     - jsonPath: .status.synced
       name: Synced
       type: boolean
@@ -32,7 +35,7 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: LiteLLMVirtualKey is the Schema for the litellmvirtualkeys API.
+        description: LiteLLMTeam is the Schema for the litellmteams API.
         properties:
           apiVersion:
             description: |-
@@ -52,14 +55,10 @@ spec:
           metadata:
             type: object
           spec:
-            description: LiteLLMVirtualKeySpec defines the desired state of LiteLLMVirtualKey.
+            description: LiteLLMTeamSpec defines the desired state of LiteLLMTeam.
             properties:
               budgetDuration:
-                description: Budget reset duration (e.g., "30d").
-                type: string
-              expiresAt:
-                description: Key expiration time.
-                format: date-time
+                description: Budget reset duration (e.g., "30d", "7d").
                 type: string
               instanceRef:
                 description: Reference to the LiteLLMInstance.
@@ -70,57 +69,73 @@ spec:
                 required:
                 - name
                 type: object
-              keyAlias:
-                description: Human-readable key alias.
-                type: string
-              keySecretName:
+              maxBudgetMonthly:
+                description: Maximum monthly budget in USD.
+                type: number
+              memberManagement:
+                default: mixed
                 description: |-
-                  Name for the Secret that stores the generated API key.
-                  Defaults to "{name}-key".
+                  Controls who owns team membership.
+                    "crd"   — CRD is authoritative. Only listed members exist.
+                    "sso"   — IdP is authoritative. spec.members is ignored.
+                    "mixed" — CRD members are additive. SSO members are preserved.
+                enum:
+                - crd
+                - sso
+                - mixed
                 type: string
-              maxBudget:
-                description: Maximum budget in USD.
-                type: string
+              members:
+                description: |-
+                  Team members. Behavior depends on memberManagement mode.
+                  Ignored when memberManagement is "sso".
+                items:
+                  description: TeamMember defines a team member.
+                  properties:
+                    email:
+                      description: User email address.
+                      type: string
+                    role:
+                      default: user
+                      description: Role within the team.
+                      enum:
+                      - admin
+                      - user
+                      type: string
+                  required:
+                  - email
+                  type: object
+                type: array
               metadata:
                 additionalProperties:
                   type: string
-                description: Custom metadata.
+                description: Custom metadata for the team.
                 type: object
               models:
-                description: Models this key can access.
+                description: Models this team can access.
                 items:
                   type: string
                 type: array
               rpmLimit:
-                description: RPM limit for this key.
+                description: RPM limit for the team.
                 type: integer
-              teamRef:
-                description: Reference to a LiteLLMTeam CR that this key belongs to.
-                properties:
-                  name:
-                    description: Name of the LiteLLMInstance CR.
-                    type: string
-                required:
-                - name
-                type: object
+              teamAlias:
+                description: Human-readable team alias.
+                type: string
+              teamMemberRpmLimit:
+                description: RPM limit per team member.
+                type: integer
+              teamMemberTpmLimit:
+                description: TPM limit per team member.
+                type: integer
               tpmLimit:
-                description: TPM limit for this key.
+                description: TPM limit for the team.
                 type: integer
-              userRef:
-                description: Reference to a LiteLLMUser CR that this key belongs to.
-                properties:
-                  name:
-                    description: Name of the LiteLLMInstance CR.
-                    type: string
-                required:
-                - name
-                type: object
             required:
             - instanceRef
-            - keyAlias
+            - teamAlias
             type: object
           status:
-            description: LiteLLMVirtualKeyStatus defines the observed state of LiteLLMVirtualKey.
+            description: LiteLLMTeamStatus defines the observed state of LiteLLMTeam.
             properties:
               conditions:
                 description: Standard conditions.
@@ -179,39 +194,68 @@ spec:
                   - type
                   type: object
                 type: array
+              crdMembers:
+                description: Members managed by this CRD.
+                items:
+                  description: TeamMemberStatus defines the status of a team member.
+                  properties:
+                    email:
+                      description: Member email.
+                      type: string
+                    role:
+                      description: Member role.
+                      type: string
+                    source:
+                      description: Source of the member ("crd", "azure-entra", "okta",
+                        etc.).
+                      type: string
+                    synced:
+                      description: Whether the member is synced.
+                      type: boolean
+                  required:
+                  - email
+                  - role
+                  type: object
+                type: array
               currentSpend:
-                description: Current spend on this key in USD.
-                type: string
-              expiresAt:
-                description: Key expiration time.
-                format: date-time
-                type: string
-              isActive:
-                description: Whether the key is active.
-                type: boolean
-              keySecretRef:
-                description: Reference to the Secret containing the API key.
-                properties:
-                  key:
-                    description: Key within the Secret.
-                    type: string
-                  name:
-                    description: Name of the Secret.
-                    type: string
-                required:
-                - key
-                - name
-                type: object
+                description: Current spend in USD.
+                type: number
               lastSyncTime:
                 description: Last successful sync time.
                 format: date-time
                 type: string
-              litellmKeyToken:
-                description: LiteLLM-assigned key token (hashed, for reference).
+              litellmTeamId:
+                description: LiteLLM-assigned team ID.
                 type: string
+              ssoMembers:
+                description: Members provisioned by SSO/SCIM (not managed by CRD).
+                items:
+                  description: TeamMemberStatus defines the status of a team member.
+                  properties:
+                    email:
+                      description: Member email.
+                      type: string
+                    role:
+                      description: Member role.
+                      type: string
+                    source:
+                      description: Source of the member ("crd", "azure-entra", "okta",
+                        etc.).
+                      type: string
+                    synced:
+                      description: Whether the member is synced.
+                      type: boolean
+                  required:
+                  - email
+                  - role
+                  type: object
+                type: array
               synced:
-                description: Whether the key is synced to LiteLLM.
+                description: Whether the team is synced to LiteLLM.
                 type: boolean
+              totalMemberCount:
+                description: Total member count (CRD + SSO).
+                type: integer
             type: object
         type: object
     served: true

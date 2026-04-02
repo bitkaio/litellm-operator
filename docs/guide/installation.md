@@ -91,9 +91,9 @@ kubectl get pods -n litellm-operator-system
 kubectl get crd | grep litellm
 
 # Expected CRDs:
-# litellminstances.litellm.bitkaio.com
-# litellmmodels.litellm.bitkaio.com
-# litellmteams.litellm.bitkaio.com
-# litellmusers.litellm.bitkaio.com
-# litellmvirtualkeys.litellm.bitkaio.com
+# litellminstances.litellm.palena.ai
+# litellmmodels.litellm.palena.ai
+# litellmteams.litellm.palena.ai
+# litellmusers.litellm.palena.ai
+# litellmvirtualkeys.litellm.palena.ai
 ```

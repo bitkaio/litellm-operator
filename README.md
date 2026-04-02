@@ -58,7 +58,7 @@ kubectl create secret generic litellm-db-credentials \
 ### 4. Deploy a LiteLLM instance
 
 ```yaml
-apiVersion: litellm.bitkaio.com/v1alpha1
+apiVersion: litellm.palena.ai/v1alpha1
 kind: LiteLLMInstance
 metadata:
   name: my-gateway
@@ -79,7 +79,7 @@ spec:
 ### 5. Register a model
 
 ```yaml
-apiVersion: litellm.bitkaio.com/v1alpha1
+apiVersion: litellm.palena.ai/v1alpha1
 kind: LiteLLMModel
 metadata:
   name: gpt4o
@@ -97,7 +97,7 @@ spec:
 ### 6. Create a team and API key
 
 ```yaml
-apiVersion: litellm.bitkaio.com/v1alpha1
+apiVersion: litellm.palena.ai/v1alpha1
 kind: LiteLLMTeam
 metadata:
   name: engineering
@@ -112,7 +112,7 @@ spec:
     - email: dev@example.com
       role: user
 ---
-apiVersion: litellm.bitkaio.com/v1alpha1
+apiVersion: litellm.palena.ai/v1alpha1
 kind: LiteLLMVirtualKey
 metadata:
   name: eng-ci-key
@@ -190,7 +190,7 @@ Key design points:
 - **LiteLLMInstance** controller manages Deployment, ConfigMap, Service, Secrets, Ingress, HPA, PDB, NetworkPolicy, and migration Jobs
 - **Secondary controllers** (Model, Team, User, VirtualKey) resolve their `instanceRef` to discover the LiteLLM API endpoint and master key, then sync state via the REST API
 - **Finalizers** ensure cleanup: deleting a CRD calls the corresponding LiteLLM API delete endpoint before removing the Kubernetes resource
-- **Spec hash annotations** (`litellm.bitkaio.com/sync-hash`) enable change detection to avoid unnecessary API calls
+- **Spec hash annotations** (`litellm.palena.ai/sync-hash`) enable change detection to avoid unnecessary API calls
 
 ## Project Structure
 

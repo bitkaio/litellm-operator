@@ -41,9 +41,9 @@ type LiteLLMUserReconciler struct {
 	LiteLLMClientFactory litellm.ClientFactory
 }
 
-// +kubebuilder:rbac:groups=litellm.bitkaio.com,resources=litellmusers,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=litellm.bitkaio.com,resources=litellmusers/status,verbs=get;update;patch
-// +kubebuilder:rbac:groups=litellm.bitkaio.com,resources=litellmusers/finalizers,verbs=update
+// +kubebuilder:rbac:groups=litellm.palena.ai,resources=litellmusers,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=litellm.palena.ai,resources=litellmusers/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=litellm.palena.ai,resources=litellmusers/finalizers,verbs=update
 
 func (r *LiteLLMUserReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	log := logf.FromContext(ctx)

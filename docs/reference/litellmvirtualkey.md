@@ -2,14 +2,14 @@
 
 Generates a scoped API key and stores it in a Kubernetes Secret.
 
-**API Version:** `litellm.bitkaio.com/v1alpha1`
+**API Version:** `litellm.palena.ai/v1alpha1`
 **Kind:** `LiteLLMVirtualKey`
 **Short Name:** `lk`
 
 ## Example
 
 ```yaml
-apiVersion: litellm.bitkaio.com/v1alpha1
+apiVersion: litellm.palena.ai/v1alpha1
 kind: LiteLLMVirtualKey
 metadata:
   name: eng-ci-key
@@ -81,7 +81,7 @@ kind: Secret
 metadata:
   name: eng-ci-key-key
   ownerReferences:
-    - apiVersion: litellm.bitkaio.com/v1alpha1
+    - apiVersion: litellm.palena.ai/v1alpha1
       kind: LiteLLMVirtualKey
       name: eng-ci-key
 type: Opaque

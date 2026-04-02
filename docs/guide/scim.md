@@ -23,7 +23,7 @@ The operator supports configuring SCIM v2 provisioning endpoints on LiteLLM inst
 The simplest setup — the operator generates a SCIM token and stores it in a Secret:
 
 ```yaml
-apiVersion: litellm.bitkaio.com/v1alpha1
+apiVersion: litellm.palena.ai/v1alpha1
 kind: LiteLLMInstance
 metadata:
   name: my-gateway

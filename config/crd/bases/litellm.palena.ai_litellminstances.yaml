@@ -4,9 +4,9 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.18.0
-  name: litellminstances.litellm.bitkaio.com
+  name: litellminstances.litellm.palena.ai
 spec:
-  group: litellm.bitkaio.com
+  group: litellm.palena.ai
   names:
     kind: LiteLLMInstance
     listKind: LiteLLMInstanceList

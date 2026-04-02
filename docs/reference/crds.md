@@ -1,6 +1,6 @@
 # CRD Reference
 
-The LiteLLM Operator defines five Custom Resource Definitions in the `litellm.bitkaio.com/v1alpha1` API group.
+The LiteLLM Operator defines five Custom Resource Definitions in the `litellm.palena.ai/v1alpha1` API group.
 
 ## Overview
 

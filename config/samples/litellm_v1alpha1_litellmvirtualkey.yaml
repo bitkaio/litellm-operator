@@ -1,4 +1,4 @@
-apiVersion: litellm.bitkaio.com/v1alpha1
+apiVersion: litellm.palena.ai/v1alpha1
 kind: LiteLLMVirtualKey
 metadata:
   labels:

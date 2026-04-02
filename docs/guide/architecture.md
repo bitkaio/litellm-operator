@@ -79,7 +79,7 @@ CR created/updated/deleted
 └── 6. Update status (synced, IDs, conditions)
 ```
 
-**Change detection** uses a spec hash stored in the `litellm.bitkaio.com/sync-hash` annotation. On each reconciliation, the current spec hash is compared to the stored hash — if different, an update is sent to the LiteLLM API.
+**Change detection** uses a spec hash stored in the `litellm.palena.ai/sync-hash` annotation. On each reconciliation, the current spec hash is compared to the stored hash — if different, an update is sent to the LiteLLM API.
 
 ## Reconciliation Model
 

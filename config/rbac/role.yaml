@@ -55,7 +55,7 @@ rules:
   - update
   - watch
 - apiGroups:
-  - litellm.bitkaio.com
+  - litellm.palena.ai
   resources:
   - litellminstances
   - litellmmodels
@@ -71,7 +71,7 @@ rules:
   - update
   - watch
 - apiGroups:
-  - litellm.bitkaio.com
+  - litellm.palena.ai
   resources:
   - litellminstances/finalizers
   - litellmmodels/finalizers
@@ -81,7 +81,7 @@ rules:
   verbs:
   - update
 - apiGroups:
-  - litellm.bitkaio.com
+  - litellm.palena.ai
   resources:
   - litellminstances/status
   - litellmmodels/status

@@ -109,7 +109,7 @@ refactor(resources): extract common label builder
 
 - CRD type files: `litellm<resource>_types.go`
 - Controller files: `litellm<resource>_controller.go`
-- Constants use PascalCase with the `litellm.bitkaio.com/` prefix for annotations and labels
+- Constants use PascalCase with the `litellm.palena.ai/` prefix for annotations and labels
 
 ### Reconciliation Pattern
 

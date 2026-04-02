@@ -40,9 +40,9 @@ type LiteLLMModelReconciler struct {
 	LiteLLMClientFactory litellm.ClientFactory
 }
 
-// +kubebuilder:rbac:groups=litellm.bitkaio.com,resources=litellmmodels,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=litellm.bitkaio.com,resources=litellmmodels/status,verbs=get;update;patch
-// +kubebuilder:rbac:groups=litellm.bitkaio.com,resources=litellmmodels/finalizers,verbs=update
+// +kubebuilder:rbac:groups=litellm.palena.ai,resources=litellmmodels,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=litellm.palena.ai,resources=litellmmodels/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=litellm.palena.ai,resources=litellmmodels/finalizers,verbs=update
 
 func (r *LiteLLMModelReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	log := logf.FromContext(ctx)

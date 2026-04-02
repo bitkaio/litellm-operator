@@ -49,9 +49,9 @@ type LiteLLMInstanceReconciler struct {
 	Scheme *runtime.Scheme
 }
 
-// +kubebuilder:rbac:groups=litellm.bitkaio.com,resources=litellminstances,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=litellm.bitkaio.com,resources=litellminstances/status,verbs=get;update;patch
-// +kubebuilder:rbac:groups=litellm.bitkaio.com,resources=litellminstances/finalizers,verbs=update
+// +kubebuilder:rbac:groups=litellm.palena.ai,resources=litellminstances,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=litellm.palena.ai,resources=litellminstances/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=litellm.palena.ai,resources=litellminstances/finalizers,verbs=update
 // +kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=core,resources=configmaps;services;secrets,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=batch,resources=jobs,verbs=get;list;watch;create;update;patch;delete

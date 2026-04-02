@@ -2,14 +2,14 @@
 
 Creates a user in LiteLLM for non-SSO environments. Useful for service accounts, bot users, and environments without an Identity Provider.
 
-**API Version:** `litellm.bitkaio.com/v1alpha1`
+**API Version:** `litellm.palena.ai/v1alpha1`
 **Kind:** `LiteLLMUser`
 **Short Name:** `lu`
 
 ## Example
 
 ```yaml
-apiVersion: litellm.bitkaio.com/v1alpha1
+apiVersion: litellm.palena.ai/v1alpha1
 kind: LiteLLMUser
 metadata:
   name: service-bot

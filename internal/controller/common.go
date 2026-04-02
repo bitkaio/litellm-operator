@@ -32,19 +32,19 @@ import (
 
 const (
 	// FinalizerName is the finalizer used by all controllers.
-	FinalizerName = "litellm.bitkaio.com/finalizer"
+	FinalizerName = "litellm.palena.ai/finalizer"
 
 	// AnnotationManagedBy marks resources managed by the operator.
-	AnnotationManagedBy = "litellm.bitkaio.com/managed-by"
+	AnnotationManagedBy = "litellm.palena.ai/managed-by"
 
 	// AnnotationSyncHash stores the hash of the last synced spec.
-	AnnotationSyncHash = "litellm.bitkaio.com/sync-hash"
+	AnnotationSyncHash = "litellm.palena.ai/sync-hash"
 
 	// LabelInstanceName labels resources with the instance name.
-	LabelInstanceName = "litellm.bitkaio.com/instance"
+	LabelInstanceName = "litellm.palena.ai/instance"
 
 	// LabelResourceType labels resources with their type.
-	LabelResourceType = "litellm.bitkaio.com/resource-type"
+	LabelResourceType = "litellm.palena.ai/resource-type"
 
 	// LabelApp is the standard app label.
 	LabelApp = "app.kubernetes.io/name"

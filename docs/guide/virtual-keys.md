@@ -13,7 +13,7 @@ The `LiteLLMVirtualKey` CRD generates scoped API keys and automatically stores t
 ## Creating a Virtual Key
 
 ```yaml
-apiVersion: litellm.bitkaio.com/v1alpha1
+apiVersion: litellm.palena.ai/v1alpha1
 kind: LiteLLMVirtualKey
 metadata:
   name: eng-ci-key
@@ -109,7 +109,7 @@ The Secret has an `ownerReference` pointing to the VirtualKey CR:
 ```yaml
 metadata:
   ownerReferences:
-    - apiVersion: litellm.bitkaio.com/v1alpha1
+    - apiVersion: litellm.palena.ai/v1alpha1
       kind: LiteLLMVirtualKey
       name: eng-ci-key
       controller: true

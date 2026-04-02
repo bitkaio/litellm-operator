@@ -2,14 +2,14 @@
 
 Registers an AI model with a LiteLLM proxy instance. The operator syncs the model to the LiteLLM API via `POST /model/new` and `POST /model/update`.
 
-**API Version:** `litellm.bitkaio.com/v1alpha1`
+**API Version:** `litellm.palena.ai/v1alpha1`
 **Kind:** `LiteLLMModel`
 **Short Name:** `lm`
 
 ## Example
 
 ```yaml
-apiVersion: litellm.bitkaio.com/v1alpha1
+apiVersion: litellm.palena.ai/v1alpha1
 kind: LiteLLMModel
 metadata:
   name: gpt4o
@@ -89,7 +89,7 @@ Register the same model name from multiple providers for automatic fallback:
 
 ```yaml
 ---
-apiVersion: litellm.bitkaio.com/v1alpha1
+apiVersion: litellm.palena.ai/v1alpha1
 kind: LiteLLMModel
 metadata:
   name: gpt4o-openai
@@ -103,7 +103,7 @@ spec:
       name: openai-credentials
       key: OPENAI_API_KEY
 ---
-apiVersion: litellm.bitkaio.com/v1alpha1
+apiVersion: litellm.palena.ai/v1alpha1
 kind: LiteLLMModel
 metadata:
   name: gpt4o-azure

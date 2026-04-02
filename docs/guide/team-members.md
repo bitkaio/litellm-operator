@@ -11,7 +11,7 @@ When SSO (Azure Entra ID, Okta, etc.) is configured, LiteLLM auto-creates teams 
 Set the mode via `spec.memberManagement`:
 
 ```yaml
-apiVersion: litellm.bitkaio.com/v1alpha1
+apiVersion: litellm.palena.ai/v1alpha1
 kind: LiteLLMTeam
 metadata:
   name: engineering

@@ -24,7 +24,7 @@ kubectl create secret generic sso-credentials \
 ### 2. Configure SSO on the Instance
 
 ```yaml
-apiVersion: litellm.bitkaio.com/v1alpha1
+apiVersion: litellm.palena.ai/v1alpha1
 kind: LiteLLMInstance
 metadata:
   name: my-gateway

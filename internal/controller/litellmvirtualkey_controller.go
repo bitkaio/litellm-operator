@@ -43,9 +43,9 @@ type LiteLLMVirtualKeyReconciler struct {
 	LiteLLMClientFactory litellm.ClientFactory
 }
 
-// +kubebuilder:rbac:groups=litellm.bitkaio.com,resources=litellmvirtualkeys,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=litellm.bitkaio.com,resources=litellmvirtualkeys/status,verbs=get;update;patch
-// +kubebuilder:rbac:groups=litellm.bitkaio.com,resources=litellmvirtualkeys/finalizers,verbs=update
+// +kubebuilder:rbac:groups=litellm.palena.ai,resources=litellmvirtualkeys,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=litellm.palena.ai,resources=litellmvirtualkeys/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=litellm.palena.ai,resources=litellmvirtualkeys/finalizers,verbs=update
 
 func (r *LiteLLMVirtualKeyReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	log := logf.FromContext(ctx)
