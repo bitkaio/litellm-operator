@@ -45,7 +45,7 @@ make install
 ### 2. Deploy the operator
 
 ```sh
-make deploy IMG=ghcr.io/bitkaio/litellm-operator:latest
+make deploy IMG=ghcr.io/palenaai/litellm-operator:latest
 ```
 
 ### 3. Create a database secret
@@ -144,7 +144,7 @@ make deploy        # Deploy operator
 ### OLM (OpenShift / clusters with OLM)
 
 ```sh
-operator-sdk run bundle ghcr.io/bitkaio/litellm-operator-bundle:v0.5.0
+operator-sdk run bundle ghcr.io/palenaai/litellm-operator-bundle:v0.5.0
 ```
 
 ### Helm

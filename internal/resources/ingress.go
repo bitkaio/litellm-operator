@@ -20,7 +20,7 @@ import (
 	networkingv1 "k8s.io/api/networking/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	litellmv1alpha1 "github.com/bitkaio/litellm-operator/api/v1alpha1"
+	litellmv1alpha1 "github.com/PalenaAI/litellm-operator/api/v1alpha1"
 )
 
 // BuildIngress creates an Ingress for a LiteLLM instance.

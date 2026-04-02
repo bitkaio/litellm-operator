@@ -30,8 +30,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 
-	litellmv1alpha1 "github.com/bitkaio/litellm-operator/api/v1alpha1"
-	"github.com/bitkaio/litellm-operator/internal/litellm"
+	litellmv1alpha1 "github.com/PalenaAI/litellm-operator/api/v1alpha1"
+	"github.com/PalenaAI/litellm-operator/internal/litellm"
 )
 
 // LiteLLMUserReconciler reconciles a LiteLLMUser object.

@@ -1,4 +1,4 @@
-module github.com/bitkaio/litellm-operator
+module github.com/PalenaAI/litellm-operator
 
 go 1.24.0
 

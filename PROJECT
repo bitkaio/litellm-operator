@@ -9,7 +9,7 @@ plugins:
   manifests.sdk.operatorframework.io/v2: {}
   scorecard.sdk.operatorframework.io/v2: {}
 projectName: litellm-operator
-repo: github.com/bitkaio/litellm-operator
+repo: github.com/PalenaAI/litellm-operator
 resources:
 - api:
     crdVersion: v1
@@ -18,7 +18,7 @@ resources:
   domain: palena.ai
   group: litellm
   kind: LiteLLMInstance
-  path: github.com/bitkaio/litellm-operator/api/v1alpha1
+  path: github.com/PalenaAI/litellm-operator/api/v1alpha1
   version: v1alpha1
 - api:
     crdVersion: v1
@@ -27,7 +27,7 @@ resources:
   domain: palena.ai
   group: litellm
   kind: LiteLLMModel
-  path: github.com/bitkaio/litellm-operator/api/v1alpha1
+  path: github.com/PalenaAI/litellm-operator/api/v1alpha1
   version: v1alpha1
 - api:
     crdVersion: v1
@@ -36,7 +36,7 @@ resources:
   domain: palena.ai
   group: litellm
   kind: LiteLLMTeam
-  path: github.com/bitkaio/litellm-operator/api/v1alpha1
+  path: github.com/PalenaAI/litellm-operator/api/v1alpha1
   version: v1alpha1
 - api:
     crdVersion: v1
@@ -45,7 +45,7 @@ resources:
   domain: palena.ai
   group: litellm
   kind: LiteLLMUser
-  path: github.com/bitkaio/litellm-operator/api/v1alpha1
+  path: github.com/PalenaAI/litellm-operator/api/v1alpha1
   version: v1alpha1
 - api:
     crdVersion: v1
@@ -54,6 +54,6 @@ resources:
   domain: palena.ai
   group: litellm
   kind: LiteLLMVirtualKey
-  path: github.com/bitkaio/litellm-operator/api/v1alpha1
+  path: github.com/PalenaAI/litellm-operator/api/v1alpha1
   version: v1alpha1
 version: "3"
