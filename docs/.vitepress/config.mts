@@ -80,7 +80,7 @@ export default defineConfig({
     ],
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/bitkaio/litellm-operator' },
+      { icon: 'github', link: 'https://github.com/PalenaAI/litellm-operator' },
     ],
 
     search: {
@@ -88,7 +88,7 @@ export default defineConfig({
     },
 
     editLink: {
-      pattern: 'https://github.com/bitkaio/litellm-operator/edit/main/docs/:path',
+      pattern: 'https://github.com/PalenaAI/litellm-operator/edit/main/docs/:path',
     },
 
     footer: {

@@ -164,9 +164,9 @@ deploy/charts/         Helm chart
 
 ## Reporting Issues
 
-- Use [GitHub Issues](https://github.com/bitkaio/litellm-operator/issues)
+- Use [GitHub Issues](https://github.com/PalenaAI/litellm-operator/issues)
 - Include steps to reproduce, expected vs actual behavior, and relevant logs
-- For security vulnerabilities, email security@bitkai.io instead of opening a public issue
+- For security vulnerabilities, email security@palena.ai instead of opening a public issue
 
 ## License
 

@@ -11,7 +11,7 @@ hero:
       link: /guide/getting-started
     - theme: alt
       text: View on GitHub
-      link: https://github.com/bitkaio/litellm-operator
+      link: https://github.com/PalenaAI/litellm-operator
 
 features:
   - title: Declarative CRDs

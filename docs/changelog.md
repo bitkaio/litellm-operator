@@ -31,5 +31,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GitHub Actions workflows for tests, linting, and releases
 - OLM bundle and catalog manifests for OperatorHub distribution
 
-[Unreleased]: https://github.com/bitkaio/litellm-operator/compare/v0.5.0...HEAD
-[0.5.0]: https://github.com/bitkaio/litellm-operator/releases/tag/v0.5.0
+[Unreleased]: https://github.com/PalenaAI/litellm-operator/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/PalenaAI/litellm-operator/releases/tag/v0.5.0

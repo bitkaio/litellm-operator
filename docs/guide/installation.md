@@ -7,7 +7,7 @@ The LiteLLM Operator can be installed three ways depending on your cluster setup
 For clusters with the Operator Lifecycle Manager installed (all OpenShift clusters, or vanilla Kubernetes with OLM):
 
 ```bash
-operator-sdk run bundle ghcr.io/bitkaio/litellm-operator-bundle:v0.5.0
+operator-sdk run bundle ghcr.io/palenaai/litellm-operator-bundle:v0.5.0
 ```
 
 Verify the installation:
@@ -35,7 +35,7 @@ To customize values:
 
 ```bash
 helm install litellm-operator deploy/charts/litellm-operator/ \
-  --set image.repository=ghcr.io/bitkaio/litellm-operator \
+  --set image.repository=ghcr.io/palenaai/litellm-operator \
   --set image.tag=v0.5.0
 ```
 
@@ -54,7 +54,7 @@ For development and CI/CD:
 make install
 
 # Deploy the operator to the cluster
-make deploy IMG=ghcr.io/bitkaio/litellm-operator:v0.5.0
+make deploy IMG=ghcr.io/palenaai/litellm-operator:v0.5.0
 
 # Or run locally against your kubeconfig cluster
 make run
@@ -73,7 +73,7 @@ For a standalone install without Helm or OLM:
 
 ```bash
 # Build the installer manifest
-make build-installer IMG=ghcr.io/bitkaio/litellm-operator:v0.5.0
+make build-installer IMG=ghcr.io/palenaai/litellm-operator:v0.5.0
 
 # Apply it
 kubectl apply -f dist/install.yaml

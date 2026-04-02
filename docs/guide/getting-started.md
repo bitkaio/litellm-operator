@@ -18,7 +18,7 @@ The quickest way to install for development:
 make install
 
 # Deploy the operator
-make deploy IMG=ghcr.io/bitkaio/litellm-operator:latest
+make deploy IMG=ghcr.io/palenaai/litellm-operator:latest
 ```
 
 See the [Installation guide](/guide/installation) for OLM and Helm options.
