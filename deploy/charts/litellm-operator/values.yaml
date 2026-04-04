@@ -1,0 +1,51 @@
+image:
+  repository: ghcr.io/palenaai/litellm-operator
+  tag: "v0.5.0"  # Defaults to appVersion
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+replicaCount: 1
+
+leaderElection:
+  enabled: true
+
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 128Mi
+  requests:
+    cpu: 10m
+    memory: 64Mi
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+
+metrics:
+  enabled: false
+  service:
+    port: 8443
+
+installCRDs: true

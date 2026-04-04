@@ -1,0 +1,32 @@
+LiteLLM Operator has been installed.
+
+1. Verify the operator is running:
+
+  kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/name={{ include "litellm-operator.name" . }}
+
+2. Deploy a LiteLLM instance:
+
+  kubectl apply -f - <<EOF
+  apiVersion: litellm.palena.ai/v1alpha1
+  kind: LiteLLMInstance
+  metadata:
+    name: my-gateway
+  spec:
+    replicas: 1
+    image:
+      repository: ghcr.io/berriai/litellm
+      tag: main-v1.60.0
+    masterKey:
+      autoGenerate: true
+    database:
+      external:
+        secretRef:
+          name: litellm-db-credentials
+          key: DATABASE_URL
+  EOF
+
+3. Check the instance status:
+
+  kubectl get li
+
+For more information, visit https://github.com/PalenaAI/litellm-operator

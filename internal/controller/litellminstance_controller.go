@@ -53,7 +53,7 @@ type LiteLLMInstanceReconciler struct {
 // +kubebuilder:rbac:groups=litellm.palena.ai,resources=litellminstances/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=litellm.palena.ai,resources=litellminstances/finalizers,verbs=update
 // +kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=core,resources=configmaps;services;secrets,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=core,resources=configmaps;services;secrets;serviceaccounts,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=batch,resources=jobs,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=networking.k8s.io,resources=ingresses;networkpolicies,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=autoscaling,resources=horizontalpodautoscalers,verbs=get;list;watch;create;update;patch;delete
@@ -93,9 +93,17 @@ func (r *LiteLLMInstanceReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 		log.Error(err, "failed to reconcile ConfigMap")
 	}
 
-	// 3. Database migration job (if enabled)
-	if instance.Spec.Database.Migration == nil || instance.Spec.Database.Migration.Enabled {
-		if err := r.reconcileMigrationJob(ctx, &instance, labels); err != nil {
+	// 3. ServiceAccount
+	if err := r.reconcileServiceAccount(ctx, &instance, labels); err != nil {
+		reconcileErr = err
+		log.Error(err, "failed to reconcile ServiceAccount")
+	}
+
+	// 4. Database migration job (if enabled)
+	// Migration is best-effort and must never block Deployment creation.
+	if instance.Spec.Database.Migration != nil && instance.Spec.Database.Migration.Enabled {
+		migrationDone, err := r.reconcileMigrationJob(ctx, &instance, labels)
+		if err != nil {
 			log.Error(err, "failed to reconcile migration Job")
 			meta.SetStatusCondition(&instance.Status.Conditions, metav1.Condition{
 				Type:               ConditionDatabaseReady,
@@ -104,31 +112,46 @@ func (r *LiteLLMInstanceReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 				Message:            err.Error(),
 				ObservedGeneration: instance.Generation,
 			})
-			_ = r.Status().Update(ctx, &instance)
-			return ctrl.Result{RequeueAfter: 60 * time.Second}, nil
+		} else if migrationDone {
+			meta.SetStatusCondition(&instance.Status.Conditions, metav1.Condition{
+				Type:               ConditionDatabaseReady,
+				Status:             metav1.ConditionTrue,
+				Reason:             "MigrationComplete",
+				Message:            "Database migration completed successfully",
+				ObservedGeneration: instance.Generation,
+			})
+		} else {
+			meta.SetStatusCondition(&instance.Status.Conditions, metav1.Condition{
+				Type:               ConditionDatabaseReady,
+				Status:             metav1.ConditionFalse,
+				Reason:             "MigrationRunning",
+				Message:            "Database migration is in progress",
+				ObservedGeneration: instance.Generation,
+			})
 		}
+	} else {
+		meta.SetStatusCondition(&instance.Status.Conditions, metav1.Condition{
+			Type:               ConditionDatabaseReady,
+			Status:             metav1.ConditionTrue,
+			Reason:             "MigrationSkipped",
+			Message:            "Database migration not enabled; LiteLLM handles migrations on startup",
+			ObservedGeneration: instance.Generation,
+		})
 	}
-	meta.SetStatusCondition(&instance.Status.Conditions, metav1.Condition{
-		Type:               ConditionDatabaseReady,
-		Status:             metav1.ConditionTrue,
-		Reason:             "MigrationComplete",
-		Message:            "Database migration completed successfully",
-		ObservedGeneration: instance.Generation,
-	})
 
-	// 4. Deployment
+	// 5. Deployment
 	if err := r.reconcileDeployment(ctx, &instance, labels); err != nil {
 		reconcileErr = err
 		log.Error(err, "failed to reconcile Deployment")
 	}
 
-	// 5. Service
+	// 6. Service
 	if err := r.reconcileService(ctx, &instance, labels); err != nil {
 		reconcileErr = err
 		log.Error(err, "failed to reconcile Service")
 	}
 
-	// 6. Ingress (conditional)
+	// 7. Ingress (conditional)
 	if instance.Spec.Ingress != nil && instance.Spec.Ingress.Enabled {
 		if err := r.reconcileIngress(ctx, &instance, labels); err != nil {
 			reconcileErr = err
@@ -136,7 +159,7 @@ func (r *LiteLLMInstanceReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 		}
 	}
 
-	// 7. HPA (conditional)
+	// 8. HPA (conditional)
 	if instance.Spec.Autoscaling != nil && instance.Spec.Autoscaling.Enabled {
 		if err := r.reconcileHPA(ctx, &instance, labels); err != nil {
 			reconcileErr = err
@@ -144,7 +167,7 @@ func (r *LiteLLMInstanceReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 		}
 	}
 
-	// 8. PDB (conditional)
+	// 9. PDB (conditional)
 	if instance.Spec.PodDisruptionBudget != nil && instance.Spec.PodDisruptionBudget.Enabled {
 		if err := r.reconcilePDB(ctx, &instance, labels); err != nil {
 			reconcileErr = err
@@ -152,7 +175,7 @@ func (r *LiteLLMInstanceReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 		}
 	}
 
-	// 9. NetworkPolicy (conditional)
+	// 10. NetworkPolicy (conditional)
 	if instance.Spec.Security != nil && instance.Spec.Security.NetworkPolicy != nil && instance.Spec.Security.NetworkPolicy.Enabled {
 		if err := r.reconcileNetworkPolicy(ctx, &instance, labels); err != nil {
 			reconcileErr = err
@@ -160,7 +183,7 @@ func (r *LiteLLMInstanceReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 		}
 	}
 
-	// 10. SCIM token
+	// 11. SCIM token
 	if instance.Spec.SCIM != nil && instance.Spec.SCIM.Enabled {
 		if err := r.reconcileSCIMToken(ctx, &instance); err != nil {
 			reconcileErr = err
@@ -240,30 +263,46 @@ func (r *LiteLLMInstanceReconciler) reconcileConfigMap(ctx context.Context, inst
 	return r.createOrUpdate(ctx, desired, &corev1.ConfigMap{})
 }
 
-func (r *LiteLLMInstanceReconciler) reconcileMigrationJob(ctx context.Context, instance *litellmv1alpha1.LiteLLMInstance, labels map[string]string) error {
-	desired := resources.BuildMigrationJob(instance, labels)
+func (r *LiteLLMInstanceReconciler) reconcileServiceAccount(ctx context.Context, instance *litellmv1alpha1.LiteLLMInstance, labels map[string]string) error {
+	desired := resources.BuildServiceAccount(instance, labels)
 	if err := controllerutil.SetControllerReference(instance, desired, r.Scheme); err != nil {
 		return err
+	}
+
+	var existing corev1.ServiceAccount
+	err := r.Get(ctx, types.NamespacedName{Name: desired.Name, Namespace: desired.Namespace}, &existing)
+	if apierrors.IsNotFound(err) {
+		return r.Create(ctx, desired)
+	}
+	return err
+}
+
+// reconcileMigrationJob ensures the migration Job exists and reports its status.
+// Returns (true, nil) if the job succeeded, (false, nil) if still running, or (false, err) on failure.
+func (r *LiteLLMInstanceReconciler) reconcileMigrationJob(ctx context.Context, instance *litellmv1alpha1.LiteLLMInstance, labels map[string]string) (bool, error) {
+	desired := resources.BuildMigrationJob(instance, labels)
+	if err := controllerutil.SetControllerReference(instance, desired, r.Scheme); err != nil {
+		return false, err
 	}
 
 	var existing batchv1.Job
 	err := r.Get(ctx, types.NamespacedName{Name: desired.Name, Namespace: desired.Namespace}, &existing)
 	if apierrors.IsNotFound(err) {
-		return r.Create(ctx, desired)
+		return false, r.Create(ctx, desired)
 	}
 	if err != nil {
-		return err
+		return false, err
 	}
 
 	// Check job status
 	if existing.Status.Succeeded > 0 {
-		return nil
+		return true, nil
 	}
 	if existing.Status.Failed > 0 && (existing.Spec.BackoffLimit != nil && existing.Status.Failed >= *existing.Spec.BackoffLimit) {
-		return fmt.Errorf("migration job %s failed", desired.Name)
+		return false, fmt.Errorf("migration job %s failed after %d attempts", desired.Name, existing.Status.Failed)
 	}
 
-	return nil // still running
+	return false, nil // still running
 }
 
 func (r *LiteLLMInstanceReconciler) reconcileDeployment(ctx context.Context, instance *litellmv1alpha1.LiteLLMInstance, labels map[string]string) error {

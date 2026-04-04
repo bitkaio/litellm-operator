@@ -95,8 +95,6 @@ func BuildDeployment(instance *litellmv1alpha1.LiteLLMInstance, labels map[strin
 			FailureThreshold: startupFailureThreshold(instance),
 		},
 		SecurityContext: &corev1.SecurityContext{
-			RunAsNonRoot:             boolPtr(true),
-			ReadOnlyRootFilesystem:   boolPtr(true),
 			AllowPrivilegeEscalation: boolPtr(false),
 		},
 	}
@@ -106,12 +104,12 @@ func BuildDeployment(instance *litellmv1alpha1.LiteLLMInstance, labels map[strin
 	} else {
 		container.Resources = corev1.ResourceRequirements{
 			Requests: corev1.ResourceList{
-				corev1.ResourceCPU:    resource.MustParse("100m"),
-				corev1.ResourceMemory: resource.MustParse("256Mi"),
+				corev1.ResourceCPU:    resource.MustParse("250m"),
+				corev1.ResourceMemory: resource.MustParse("512Mi"),
 			},
 			Limits: corev1.ResourceList{
-				corev1.ResourceCPU:    resource.MustParse("1"),
-				corev1.ResourceMemory: resource.MustParse("512Mi"),
+				corev1.ResourceCPU:    resource.MustParse("2"),
+				corev1.ResourceMemory: resource.MustParse("2Gi"),
 			},
 		}
 	}
@@ -162,11 +160,7 @@ func BuildDeployment(instance *litellmv1alpha1.LiteLLMInstance, labels map[strin
 					ImagePullSecrets:   imagePullSecrets,
 					Containers:         []corev1.Container{container},
 					Volumes:            buildVolumes(instance),
-					SecurityContext: &corev1.PodSecurityContext{
-						RunAsNonRoot: boolPtr(true),
-						RunAsUser:    int64Ptr(1001),
-						FSGroup:      int64Ptr(1001),
-					},
+					SecurityContext: &corev1.PodSecurityContext{},
 				},
 			},
 		},

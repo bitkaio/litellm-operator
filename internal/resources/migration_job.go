@@ -96,10 +96,12 @@ func BuildMigrationJob(instance *litellmv1alpha1.LiteLLMInstance, labels map[str
 					RestartPolicy: corev1.RestartPolicyOnFailure,
 					Containers: []corev1.Container{
 						{
-							Name:    "migrate",
-							Image:   fmt.Sprintf("%s:%s", repo, tag),
-							Command: []string{"python", "-c", "from litellm.proxy.db.init_db import main; import asyncio; asyncio.run(main())"},
-							Env:     dbEnv,
+							Name:  "migrate",
+							Image: fmt.Sprintf("%s:%s", repo, tag),
+							Command: []string{"sh", "-c",
+								"prisma db push --schema=/app/schema.prisma --accept-data-loss --skip-generate",
+							},
+							Env: dbEnv,
 							SecurityContext: &corev1.SecurityContext{
 								RunAsNonRoot:             boolPtr(true),
 								AllowPrivilegeEscalation: boolPtr(false),

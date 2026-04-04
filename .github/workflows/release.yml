@@ -55,6 +55,9 @@ jobs:
         # Docker tags must be lowercase; github.repository preserves org casing
         run: echo "name=${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
 
+      - name: Sync Helm chart CRDs
+        run: make sync-helm-crds
+
       - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
