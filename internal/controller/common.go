@@ -85,7 +85,14 @@ func resolveInstance(
 		return nil, fmt.Errorf("instance %q is not ready", ref.Name)
 	}
 
-	masterKey, err := getSecretValue(ctx, c, namespace, instance.Spec.MasterKey.SecretRef)
+	masterKeyRef := instance.Spec.MasterKey.SecretRef
+	if masterKeyRef == nil && instance.Spec.MasterKey.AutoGenerate {
+		masterKeyRef = &litellmv1alpha1.SecretKeyRef{
+			Name: instance.Name + "-master-key",
+			Key:  "master-key",
+		}
+	}
+	masterKey, err := getSecretValue(ctx, c, namespace, masterKeyRef)
 	if err != nil {
 		return nil, fmt.Errorf("get master key: %w", err)
 	}

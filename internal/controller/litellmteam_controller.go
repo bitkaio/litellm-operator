@@ -117,6 +117,16 @@ func (r *LiteLLMTeamReconciler) reconcileTeam(
 		}
 		team.Status.LiteLLMTeamID = resp.TeamID
 		team.Status.Synced = true
+		if err := r.Status().Update(ctx, team); err != nil {
+			return ctrl.Result{}, fmt.Errorf("update status after create: %w", err)
+		}
+		if team.Annotations == nil {
+			team.Annotations = map[string]string{}
+		}
+		team.Annotations[AnnotationSyncHash] = computeSpecHash(team.Spec)
+		if err := r.Update(ctx, team); err != nil {
+			return ctrl.Result{}, err
+		}
 		log.Info("created team", "teamId", resp.TeamID)
 	} else {
 		currentHash := computeSpecHash(team.Spec)

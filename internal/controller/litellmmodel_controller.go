@@ -151,11 +151,26 @@ func (r *LiteLLMModelReconciler) reconcileModel(
 		}
 		model.Status.LiteLLMModelID = resp.ModelID
 		model.Status.Synced = true
+		// Persist status first so re-queued reconciliations see the model ID
+		if err := r.Status().Update(ctx, model); err != nil {
+			return ctrl.Result{}, fmt.Errorf("update status after create: %w", err)
+		}
+		if model.Annotations == nil {
+			model.Annotations = map[string]string{}
+		}
+		model.Annotations[AnnotationSyncHash] = computeSpecHash(model.Spec)
+		if err := r.Update(ctx, model); err != nil {
+			return ctrl.Result{}, err
+		}
 		log.Info("created model", "modelId", resp.ModelID)
 	} else {
 		currentHash := computeSpecHash(model.Spec)
 		if model.Annotations[AnnotationSyncHash] != currentHash {
 			req.ModelID = model.Status.LiteLLMModelID
+			if req.ModelInfo == nil {
+				req.ModelInfo = &litellm.ModelInfoReq{}
+			}
+			req.ModelInfo.ID = model.Status.LiteLLMModelID
 			if err := apiClient.Models().Update(ctx, req); err != nil {
 				return ctrl.Result{RequeueAfter: 30 * time.Second}, fmt.Errorf("update model: %w", err)
 			}

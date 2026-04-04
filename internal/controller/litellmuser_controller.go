@@ -125,6 +125,16 @@ func (r *LiteLLMUserReconciler) reconcileUser(
 		}
 		user.Status.LiteLLMUserID = resp.UserID
 		user.Status.Synced = true
+		if err := r.Status().Update(ctx, user); err != nil {
+			return ctrl.Result{}, fmt.Errorf("update status after create: %w", err)
+		}
+		if user.Annotations == nil {
+			user.Annotations = map[string]string{}
+		}
+		user.Annotations[AnnotationSyncHash] = computeSpecHash(user.Spec)
+		if err := r.Update(ctx, user); err != nil {
+			return ctrl.Result{}, err
+		}
 		log.Info("created user", "userId", resp.UserID)
 	} else {
 		currentHash := computeSpecHash(user.Spec)

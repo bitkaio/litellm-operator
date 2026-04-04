@@ -52,6 +52,7 @@ type ModelParams struct {
 
 // ModelInfoReq defines optional model info in requests.
 type ModelInfoReq struct {
+	ID                 string   `json:"id,omitempty"`
 	MaxTokens          *int     `json:"max_tokens,omitempty"`
 	InputCostPerToken  *float64 `json:"input_cost_per_token,omitempty"`
 	OutputCostPerToken *float64 `json:"output_cost_per_token,omitempty"`

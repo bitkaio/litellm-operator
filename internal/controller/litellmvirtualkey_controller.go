@@ -176,6 +176,16 @@ func (r *LiteLLMVirtualKeyReconciler) reconcileKey(
 		vk.Status.KeySecretRef = &litellmv1alpha1.SecretKeyRef{Name: secretName, Key: "api_key"}
 		vk.Status.IsActive = true
 		vk.Status.Synced = true
+		if err := r.Status().Update(ctx, vk); err != nil {
+			return ctrl.Result{}, fmt.Errorf("update status after generate: %w", err)
+		}
+		if vk.Annotations == nil {
+			vk.Annotations = map[string]string{}
+		}
+		vk.Annotations[AnnotationSyncHash] = computeSpecHash(vk.Spec)
+		if err := r.Update(ctx, vk); err != nil {
+			return ctrl.Result{}, err
+		}
 		log.Info("generated virtual key", "alias", vk.Spec.KeyAlias, "secret", secretName)
 	} else {
 		// Update key if spec changed
