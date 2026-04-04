@@ -412,8 +412,8 @@ type SecuritySpec struct {
 
 	// RunAsNonRoot runs the LiteLLM container as a non-root user.
 	// Required for OpenShift and clusters enforcing Pod Security Standards.
-	// When enabled, the operator applies workarounds for Prisma's non-root
-	// compatibility issues in the official LiteLLM image.
+	// When enabled, the operator uses the official litellm-non_root image
+	// (runs as nobody, UID 65534) and applies a restricted security context.
 	// +optional
 	RunAsNonRoot *bool `json:"runAsNonRoot,omitempty"`
 }

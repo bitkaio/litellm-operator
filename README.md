@@ -12,6 +12,7 @@ Replaces manual Helm-based deployments with a declarative, reconciliation-based 
 - **VirtualKey secret management** — generated API keys are stored in Kubernetes Secrets with owner references for automatic cleanup
 - **SSO/SCIM support** — configure Azure Entra ID, Okta, Google, or generic OIDC providers declaratively
 - **Production-ready** — HPA, PDB, NetworkPolicy, health checks, resource limits, security contexts
+- **OpenShift / non-root support** — `spec.security.runAsNonRoot: true` automatically uses the official non-root image and applies restricted security contexts
 - **Multiple install methods** — OLM bundles (OperatorHub/OpenShift) or Helm chart
 
 ## Custom Resource Definitions
@@ -126,10 +127,29 @@ spec:
   maxBudget: "100"
 ```
 
+### OpenShift / Non-Root Environments
+
+For OpenShift or clusters enforcing Pod Security Standards, enable non-root mode:
+
+```yaml
+apiVersion: litellm.palena.ai/v1alpha1
+kind: LiteLLMInstance
+metadata:
+  name: my-gateway
+spec:
+  security:
+    runAsNonRoot: true
+  # ... rest of spec
+```
+
+This automatically switches to the official `litellm-non_root` image (runs as `nobody`, UID 65534) and applies a restricted pod security context compatible with OpenShift's restricted SCC.
+
+### 7. Retrieve a generated API key
+
 The generated API key is stored in a Secret (default name: `{name}-key`):
 
 ```sh
-kubectl get secret eng-ci-key-key -o jsonpath='{.data.api-key}' | base64 -d
+kubectl get secret eng-ci-key-key -o jsonpath='{.data.api_key}' | base64 -d
 ```
 
 ## Installation Methods
@@ -144,7 +164,7 @@ make deploy        # Deploy operator
 ### OLM (OpenShift / clusters with OLM)
 
 ```sh
-operator-sdk run bundle ghcr.io/palenaai/litellm-operator-bundle:v0.5.0
+operator-sdk run bundle ghcr.io/palenaai/litellm-operator-bundle:v0.6.0
 ```
 
 ### Helm
