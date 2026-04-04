@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-04-04
+
+### Added
+
+- **OpenShift / non-root support** — new `spec.security.runAsNonRoot` field on `LiteLLMInstance` automatically switches to the official `litellm-non_root` image (`ghcr.io/berriai/litellm-non_root`), sets `RunAsNonRoot: true`, and runs as `nobody` (UID 65534). Compatible with OpenShift restricted SCC and Kubernetes Pod Security Standards.
+- **ServiceAccount reconciliation** — the `LiteLLMInstance` controller now creates a ServiceAccount for the LiteLLM pods, preventing `CreateContainerConfigError` when the referenced ServiceAccount did not exist.
+- **Helm chart** — new Helm chart in `deploy/charts/litellm-operator/` as an alternative to OLM-based installation. Includes ClusterRole, ClusterRoleBinding, ServiceAccount, Deployment, leader election RBAC, and all CRD manifests.
+
+### Fixed
+
+- **Secondary controllers failed with `masterKey.autoGenerate`** — `resolveInstance` now correctly derives the auto-generated master key Secret name (`{instance}-master-key`) when `spec.masterKey.secretRef` is nil and `autoGenerate: true` is set. Previously all secondary controllers (Model, Team, User, VirtualKey) failed with `"secret ref is nil"`.
+- **Model update returned 400 "model not found"** — the `/model/update` LiteLLM API endpoint requires `model_info.id` in the request body. Added `ID` field to `ModelInfoReq` and set it in the model update path.
+- **Duplicate resource creation on first sync** — all four secondary controllers (Model, Team, User, VirtualKey) could create duplicate resources in LiteLLM because the status subresource (containing the LiteLLM resource ID) was not persisted before the annotation update triggered a re-queue. Fixed by calling `Status().Update()` before `Update()` in the create path, and setting the sync hash annotation on create (not just on update).
+- **Default resource limits too low** — bumped default container resources from 100m/256Mi requests and 1 CPU/512Mi limits to 250m/512Mi requests and 2 CPU/2Gi limits. LiteLLM's Python runtime and Prisma imports require more memory than the previous defaults.
+- **Container security context too restrictive** — removed hardcoded `RunAsNonRoot: true`, `ReadOnlyRootFilesystem: true`, and `RunAsUser: 1001` from the default container security context. LiteLLM's default image runs as root and writes to the filesystem at startup. Non-root execution is now opt-in via `spec.security.runAsNonRoot`.
+- **Migration Job uses correct image and security context** — the database migration Job now respects `spec.security.runAsNonRoot`, using the non-root image and correct UID (65534) when enabled.
+- **Migration Job command updated** — changed from Python `asyncio.run(main())` to `prisma db push` which is the supported migration approach.
+
+### Changed
+
+- Pod security context is now conditional: applied only when `spec.security.runAsNonRoot: true`, instead of being hardcoded for all deployments.
+- Image repository selection is automatic: `ghcr.io/berriai/litellm` for default mode, `ghcr.io/berriai/litellm-non_root` when non-root is enabled. Users can still override via `spec.image.repository`.
+
 ## [0.5.0] - 2026-04-01
 
 ### Added
@@ -31,5 +54,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GitHub Actions workflows for tests, linting, and releases
 - OLM bundle and catalog manifests for OperatorHub distribution
 
-[Unreleased]: https://github.com/PalenaAI/litellm-operator/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/PalenaAI/litellm-operator/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/PalenaAI/litellm-operator/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/PalenaAI/litellm-operator/releases/tag/v0.5.0
