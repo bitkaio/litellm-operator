@@ -30,9 +30,15 @@ import (
 
 // BuildMigrationJob creates a Job that runs database migrations.
 func BuildMigrationJob(instance *litellmv1alpha1.LiteLLMInstance, labels map[string]string) *batchv1.Job {
+	nonRoot := instance.Spec.Security != nil && instance.Spec.Security.RunAsNonRoot != nil && *instance.Spec.Security.RunAsNonRoot
+
 	repo := instance.Spec.Image.Repository
 	if repo == "" {
-		repo = "ghcr.io/berriai/litellm"
+		if nonRoot {
+			repo = nonRootImageRepo
+		} else {
+			repo = defaultImageRepo
+		}
 	}
 	tag := instance.Spec.Image.Tag
 	if tag == "" {
@@ -103,15 +109,11 @@ func BuildMigrationJob(instance *litellmv1alpha1.LiteLLMInstance, labels map[str
 							},
 							Env: dbEnv,
 							SecurityContext: &corev1.SecurityContext{
-								RunAsNonRoot:             boolPtr(true),
 								AllowPrivilegeEscalation: boolPtr(false),
 							},
 						},
 					},
-					SecurityContext: &corev1.PodSecurityContext{
-						RunAsNonRoot: boolPtr(true),
-						RunAsUser:    int64Ptr(1001),
-					},
+					SecurityContext: podSecurityContext(nonRoot),
 				},
 			},
 		},

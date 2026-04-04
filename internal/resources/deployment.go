@@ -29,6 +29,24 @@ import (
 	litellmv1alpha1 "github.com/PalenaAI/litellm-operator/api/v1alpha1"
 )
 
+const (
+	// defaultImageRepo is the default LiteLLM image (runs as root).
+	defaultImageRepo = "ghcr.io/berriai/litellm"
+	// nonRootImageRepo is the official non-root LiteLLM image (runs as nobody:65534).
+	nonRootImageRepo = "ghcr.io/berriai/litellm-non_root"
+)
+
+func podSecurityContext(nonRoot bool) *corev1.PodSecurityContext {
+	if nonRoot {
+		return &corev1.PodSecurityContext{
+			RunAsNonRoot: boolPtr(true),
+			RunAsUser:    int64Ptr(65534),
+			FSGroup:      int64Ptr(65534),
+		}
+	}
+	return &corev1.PodSecurityContext{}
+}
+
 // BuildDeployment creates the LiteLLM Deployment.
 func BuildDeployment(instance *litellmv1alpha1.LiteLLMInstance, labels map[string]string) *appsv1.Deployment {
 	replicas := instance.Spec.Replicas
@@ -36,9 +54,15 @@ func BuildDeployment(instance *litellmv1alpha1.LiteLLMInstance, labels map[strin
 		replicas = 1
 	}
 
+	nonRoot := instance.Spec.Security != nil && instance.Spec.Security.RunAsNonRoot != nil && *instance.Spec.Security.RunAsNonRoot
+
 	repo := instance.Spec.Image.Repository
 	if repo == "" {
-		repo = "ghcr.io/berriai/litellm"
+		if nonRoot {
+			repo = nonRootImageRepo
+		} else {
+			repo = defaultImageRepo
+		}
 	}
 	tag := instance.Spec.Image.Tag
 	if tag == "" {
@@ -160,7 +184,7 @@ func BuildDeployment(instance *litellmv1alpha1.LiteLLMInstance, labels map[strin
 					ImagePullSecrets:   imagePullSecrets,
 					Containers:         []corev1.Container{container},
 					Volumes:            buildVolumes(instance),
-					SecurityContext: &corev1.PodSecurityContext{},
+					SecurityContext:    podSecurityContext(nonRoot),
 				},
 			},
 		},

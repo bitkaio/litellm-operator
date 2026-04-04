@@ -855,6 +855,13 @@ spec:
                     required:
                     - enabled
                     type: object
+                  runAsNonRoot:
+                    description: |-
+                      RunAsNonRoot runs the LiteLLM container as a non-root user.
+                      Required for OpenShift and clusters enforcing Pod Security Standards.
+                      When enabled, the operator applies workarounds for Prisma's non-root
+                      compatibility issues in the official LiteLLM image.
+                    type: boolean
                 type: object
               service:
                 description: Service configuration.

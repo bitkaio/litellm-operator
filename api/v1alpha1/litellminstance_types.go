@@ -409,6 +409,13 @@ type SecuritySpec struct {
 	// NetworkPolicy configuration.
 	// +optional
 	NetworkPolicy *NetworkPolicySpec `json:"networkPolicy,omitempty"`
+
+	// RunAsNonRoot runs the LiteLLM container as a non-root user.
+	// Required for OpenShift and clusters enforcing Pod Security Standards.
+	// When enabled, the operator applies workarounds for Prisma's non-root
+	// compatibility issues in the official LiteLLM image.
+	// +optional
+	RunAsNonRoot *bool `json:"runAsNonRoot,omitempty"`
 }
 
 // NetworkPolicySpec defines NetworkPolicy configuration.
